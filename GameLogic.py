@@ -23,14 +23,30 @@ message_text = json.dumps(message_template)
 
 class GameLogic:
 
-    def __init__(self):
-        pass
+    def __init__(self, event_bus):
+        self.event_bus = event_bus
+        self.event_bus.register_listener('YourPlayerEvent', self.your_player_listener)
+        self.event_bus.register_listener('CreatePlayerEvent', self.create_player_listener)
+        self.event_bus.register_listener('CreateShipEvent', self.create_ship_listener)
+        self.event_bus.register_listener('ShipPositionEvent', self.ship_position_listener)
+
+    def ship_position_listener(self, event):
+        print('ship_position_listener')
+
+    def create_ship_listener(self, event):
+        print('create_player_listener')
+
+    def create_player_listener(self, event):
+        print('create_player_listener')
+
+    def your_player_listener(self, event):
+        print('your_player_listener')
 
     def on_message(self, message):
         print(message)
 
     def on_open(self, ws_client):
-        def run(*args):
+        def run():
             for i in range(30):
                 time.sleep(1)
                 ws_client.send_message(message_text)

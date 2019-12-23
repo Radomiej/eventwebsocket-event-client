@@ -2,6 +2,7 @@ import websocket
 
 
 class WebSocketClient:
+    receivers = []
 
     def send_message(self, message):
         print("send message..." + message)
@@ -9,7 +10,8 @@ class WebSocketClient:
 
     def on_message(self, message):
         print("received: " + message)
-        self.messages_listener.on_message(message)
+        for receiver in self.receivers:
+            receiver.on_message(message)
 
     def on_error(self, error):
         print(error)
@@ -19,14 +21,18 @@ class WebSocketClient:
 
     def on_open(self):
         self.running = True
-        self.messages_listener.on_open(self)
+        for receiver in self.receivers:
+            receiver.on_open()
 
     def close(self):
         self.ws.close()
 
-    def __init__(self, messages_listener):
+    def add_receiver(self, receiver):
+        self.receivers.append(receiver)
+
+    def __init__(self, receiver):
         self.running = False
-        self.messages_listener = messages_listener
+        self.receivers.append(receiver)
         websocket.enableTrace(True)
         self.ws = websocket.WebSocketApp("ws://localhost:4649/Javity",
                                          on_message=self.on_message,
